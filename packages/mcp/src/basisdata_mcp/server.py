@@ -211,31 +211,42 @@ def screen_companies(
 
 @mcp.tool()
 def search_filings(
+    ticker: str = "",
     query: str = "",
     form_type: str = "",
     filed_after: str = "",
     filed_before: str = "",
     limit: int = 25,
 ) -> str:
-    """Search SEC filings across all companies.
+    """Search SEC filings. Use ticker to get filings for a specific company, or query to search filing descriptions across all companies.
 
     Args:
+        ticker: Filter by company ticker symbol (e.g., "MKTX", "AAPL")
         query: Search terms to find in filing descriptions
         form_type: Filter by form type (e.g., "10-K", "10-Q", "8-K")
         filed_after: Only filings after this date (YYYY-MM-DD)
         filed_before: Only filings before this date (YYYY-MM-DD)
         limit: Max results (default 25)
     """
-    params = {"limit": limit}
-    if query:
-        params["q"] = query
-    if form_type:
-        params["form_type"] = form_type
-    if filed_after:
-        params["filed_after"] = filed_after
-    if filed_before:
-        params["filed_before"] = filed_before
-    data = _get("/v1/filings/search", params=params)
+    # Use the company-specific endpoint when only ticker + form_type are given
+    if ticker and not query:
+        params = {"limit": limit}
+        if form_type:
+            params["form_type"] = form_type
+        data = _get(f"/v1/companies/{ticker}/filings", params=params)
+    else:
+        params = {"limit": limit}
+        if ticker:
+            params["ticker"] = ticker
+        if query:
+            params["q"] = query
+        if form_type:
+            params["form_type"] = form_type
+        if filed_after:
+            params["filed_after"] = filed_after
+        if filed_before:
+            params["filed_before"] = filed_before
+        data = _get("/v1/filings/search", params=params)
     if "error" in data:
         return data["error"]
     return _fmt(data)
