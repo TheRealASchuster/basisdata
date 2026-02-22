@@ -265,6 +265,62 @@ def get_filing(accession_number: str) -> str:
     return _fmt(data.get("data", data))
 
 
+@mcp.tool()
+def get_raw_facts(
+    ticker: str,
+    tag: str = "",
+    tag_search: str = "",
+    unit: str = "",
+    fiscal_year: int | None = None,
+    limit: int = 100,
+) -> str:
+    """Get raw XBRL financial facts from SEC EDGAR filings. This exposes every granular line item — data that no other free API provides.
+
+    Use tag_search to discover available tags (e.g., tag_search="Labor" finds LaborAndRelatedExpense).
+    Use tag for exact tag lookup (namespace prefixes like "us-gaap:" are stripped automatically).
+    Call with just ticker and no filters to see what data is available.
+
+    Args:
+        ticker: Stock ticker symbol (e.g., AAPL, MKTX)
+        tag: Exact XBRL tag name (e.g., "LaborAndRelatedExpense" or "us-gaap:LaborAndRelatedExpense")
+        tag_search: Search for tags containing this text (e.g., "Labor", "Depreciation", "Revenue")
+        unit: Filter by unit (USD, shares, USD/shares)
+        fiscal_year: Filter by fiscal year (e.g., 2024)
+        limit: Max results (default 100, max 1000)
+    """
+    # If no tag filter specified, return the tag listing instead
+    if not tag and not tag_search:
+        params = {}
+        if unit:
+            params["unit"] = unit
+        data = _get(f"/v1/companies/{ticker}/financials/raw/tags", params=params)
+        if "error" in data:
+            return data["error"]
+        tags = data.get("data", [])
+        if not tags:
+            return f"No raw XBRL data available for {ticker}"
+        lines = [f"Available XBRL tags for {ticker} ({len(tags)} tags):\n"]
+        for t in tags[:50]:
+            lines.append(f"  {t['tag']:60s}  {t['unit']:12s}  {t['record_count']:4d} records  ({t['earliest']} to {t['latest']})")
+        if len(tags) > 50:
+            lines.append(f"\n  ... and {len(tags) - 50} more tags. Use tag_search to filter.")
+        return "\n".join(lines)
+
+    params = {"limit": limit}
+    if tag:
+        params["tag"] = tag
+    if tag_search:
+        params["tag_search"] = tag_search
+    if unit:
+        params["unit"] = unit
+    if fiscal_year:
+        params["fiscal_year"] = fiscal_year
+    data = _get(f"/v1/companies/{ticker}/financials/raw", params=params)
+    if "error" in data:
+        return data["error"]
+    return _fmt(data)
+
+
 def main():
     mcp.run(transport="stdio")
 
