@@ -1,0 +1,4 @@
+# Cloudflare Pages _redirects
+# Required for SPA routing — all paths serve index.html
+
+/*    /index.html   200
