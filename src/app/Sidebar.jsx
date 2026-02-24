@@ -5,12 +5,13 @@ import { COLORS } from "../design-system";
 import { supabase } from "../lib/supabase";
 
 const navItems = [
-  { path: "/app", label: "MCP Server", icon: "\u2699", exact: true },
   { path: "/app/chat", label: "Chat", icon: "\u25C7" },
 ];
 
 const devItems = [
   { path: "/app/keys", label: "API Keys", icon: "{}" },
+  { path: "/app/api", label: "API Setup", icon: "\u25B8" },
+  { path: "/app/mcp", label: "MCP Setup", icon: "\u2699" },
   { path: "/app/usage", label: "Usage", icon: "\u25AD" },
   { path: "/docs", label: "Documentation", icon: "\u2197", external: true },
 ];

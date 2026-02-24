@@ -9,7 +9,6 @@ export default function Keys() {
   const [newKey, setNewKey] = useState(null);
   const [showKey, setShowKey] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [copiedConfig, setCopiedConfig] = useState(false);
 
   useEffect(() => { loadKeys(); }, []);
 
@@ -40,24 +39,6 @@ export default function Keys() {
 
   const activeKey = keys.find(k => k.is_active);
   const displayKey = newKey || (activeKey ? `${activeKey.key_prefix}${"...".padStart(24, "\u2022")}` : "No active key");
-
-  const mcpConfig = `{
-  "mcpServers": {
-    "basisdata": {
-      "command": "uvx",
-      "args": ["basisdata-mcp"],
-      "env": {
-        "BASISDATA_API_KEY": "${newKey || activeKey?.key_prefix + "..."}"
-      }
-    }
-  }
-}`;
-
-  const copyConfig = () => {
-    navigator.clipboard.writeText(mcpConfig);
-    setCopiedConfig(true);
-    setTimeout(() => setCopiedConfig(false), 2000);
-  };
 
   if (loading) return <div style={{ fontSize: 13, color: "#999", padding: "60px 0" }}>Loading...</div>;
 
@@ -120,55 +101,6 @@ export default function Keys() {
         </div>
       )}
 
-      {/* MCP Setup */}
-      <div style={{ height: 1, background: COLORS.border, margin: "32px 0 24px" }} />
-      <h2 style={{ fontSize: 13, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#999", marginBottom: 16 }}>
-        MCP Setup
-      </h2>
-      <p style={{ fontSize: 13, color: "#6B6B6B", marginBottom: 12, lineHeight: 1.6 }}>
-        Add to your Claude Desktop config and restart:
-      </p>
-      <div style={{ position: "relative" }}>
-        <pre style={{
-          background: COLORS.codeBlock, border: `1px solid ${COLORS.border}`,
-          padding: 20, fontFamily: FONTS.mono, fontSize: 12,
-          lineHeight: 1.7, color: "#6B6B6B", overflowX: "auto",
-        }}>
-          {mcpConfig}
-        </pre>
-        <button onClick={copyConfig} style={{
-          position: "absolute", top: 10, right: 10,
-          background: "#FFFFFF", border: `1px solid ${COLORS.border}`,
-          padding: "5px 12px", fontSize: 11, fontWeight: 500,
-          color: copiedConfig ? COLORS.success : "#6B6B6B",
-        }}>
-          {copiedConfig ? "Copied" : "Copy"}
-        </button>
-      </div>
-
-      {/* REST API */}
-      <div style={{ height: 1, background: COLORS.border, margin: "32px 0 24px" }} />
-      <h2 style={{ fontSize: 13, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#999", marginBottom: 16 }}>
-        REST API
-      </h2>
-      <table style={{ fontSize: 13, borderCollapse: "collapse" }}>
-        <tbody>
-          <tr>
-            <td style={{ padding: "6px 16px 6px 0", color: "#6B6B6B" }}>Base URL</td>
-            <td style={{ padding: "6px 0", fontFamily: FONTS.mono, color: COLORS.text }}>https://api.basisdata.dev/v1</td>
-          </tr>
-          <tr>
-            <td style={{ padding: "6px 16px 6px 0", color: "#6B6B6B" }}>Auth header</td>
-            <td style={{ padding: "6px 0", fontFamily: FONTS.mono, color: COLORS.text }}>Authorization: Bearer bd_live_...</td>
-          </tr>
-        </tbody>
-      </table>
-      <a href="/docs" target="_blank" rel="noopener" style={{
-        display: "inline-block", marginTop: 12,
-        fontSize: 12, color: "#999", borderBottom: "1px solid #E0DFDB", paddingBottom: 1,
-      }}>
-        View full API documentation &rarr;
-      </a>
     </div>
   );
 }

@@ -14,6 +14,7 @@ import Docs from "./pages/Docs";
 // App shell (authenticated)
 import AppShell from "./app/AppShell";
 import MCP from "./app/pages/MCP";
+import ApiSetup from "./app/pages/ApiSetup";
 import AppChat from "./app/pages/AppChat";
 import Keys from "./app/pages/Keys";
 import Usage from "./app/pages/Usage";
@@ -45,10 +46,11 @@ function AppRoutes() {
 
       {/* Authenticated app shell */}
       <Route path="/app" element={<AppShell />}>
-        <Route index element={<MCP />} />
-        <Route path="mcp" element={<MCP />} />
+        <Route index element={<Navigate to="/app/chat" replace />} />
         <Route path="chat" element={<AppChat />} />
         <Route path="keys" element={<Keys />} />
+        <Route path="api" element={<ApiSetup />} />
+        <Route path="mcp" element={<MCP />} />
         <Route path="usage" element={<Usage />} />
         <Route path="billing" element={<Billing />} />
         <Route path="settings" element={<Settings />} />
