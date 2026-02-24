@@ -82,14 +82,14 @@ export default function Sidebar({ user }) {
       background: "#FFFFFF", borderRight: `1px solid ${COLORS.border}`,
       display: "flex", flexDirection: "column", zIndex: 50,
     }}>
-      {/* Logo */}
+      {/* Logo — links to marketing site */}
       <div style={{ padding: "20px 20px 16px" }}>
-        <Link to="/app" style={{
+        <a href="/" style={{
           fontSize: 15, fontWeight: 600, letterSpacing: "-0.02em",
           color: COLORS.text, textDecoration: "none",
         }}>
           BasisData
-        </Link>
+        </a>
       </div>
 
       <div style={{ height: 1, background: COLORS.border, margin: "0 20px" }} />
