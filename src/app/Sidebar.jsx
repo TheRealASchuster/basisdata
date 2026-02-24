@@ -5,7 +5,7 @@ import { COLORS } from "../design-system";
 import { supabase } from "../lib/supabase";
 
 const navItems = [
-  { path: "/app", label: "Overview", icon: "\u25CB", exact: true },
+  { path: "/app", label: "MCP Server", icon: "\u2699", exact: true },
   { path: "/app/chat", label: "Chat", icon: "\u25C7" },
 ];
 
