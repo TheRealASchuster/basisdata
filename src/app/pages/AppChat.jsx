@@ -60,6 +60,9 @@ const basisDataAdapter = {
     const decoder = new TextDecoder();
     let text = "";
     let buffer = "";
+    let lastYield = 0;
+    let dirty = false;
+    const THROTTLE_MS = 33; // ~30fps — avoids janky markdown re-parses
 
     while (true) {
       const { done, value } = await reader.read();
@@ -78,7 +81,11 @@ const basisDataAdapter = {
             const parsed = JSON.parse(line.slice(6));
             if (eventType === "delta" && parsed.text) {
               text += parsed.text;
-              yield { content: [{ type: "text", text }] };
+              dirty = true;
+            } else if (eventType === "status" && parsed.tool && text) {
+              // Tool call between text chunks — add separator
+              text += "\n\n";
+              dirty = true;
             } else if (eventType === "error") {
               throw new Error(parsed.message || "Stream error");
             }
@@ -87,9 +94,19 @@ const basisDataAdapter = {
           }
         }
       }
+
+      // Throttled yield — push accumulated text at most every THROTTLE_MS
+      if (dirty) {
+        const now = Date.now();
+        if (now - lastYield >= THROTTLE_MS) {
+          yield { content: [{ type: "text", text }] };
+          lastYield = now;
+          dirty = false;
+        }
+      }
     }
 
-    // Final yield
+    // Flush any remaining text + mark complete
     if (text) {
       yield {
         content: [{ type: "text", text }],

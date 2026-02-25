@@ -206,7 +206,7 @@ export default function Pricing() {
       }
       setShowCheckout(true);
     } else if (action === "contact") {
-      window.location.href = "mailto:alex@schuster.nyc?subject=BasisData Enterprise";
+      window.location.href = "mailto:enterprise@basisdata.dev?subject=BasisData Enterprise";
     }
   };
 
