@@ -38,6 +38,7 @@ export default function AppShell() {
           padding: "40px 48px",
           maxWidth: "calc(100vw - 240px)",
           minHeight: "100vh",
+          position: "relative",
         }}>
           <Outlet context={{ session }} />
         </main>
